@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const { Console } = require('console');
 const mdLinkExtractor = require('markdown-link-extractor');
+const linkCheck = require('link-check');
 
 
 const userPath = process.argv[2];
@@ -26,19 +27,33 @@ if (path.extname(pathValidation(userPath))==='.md'){
 }
 identifyFile(userPath);
 
-// const readNewFile = (userPath) => {
-//     return new Promise ((resolve, reject) => {
-//         fs.readFile(userPath, 'UTF-8', (error, file) => {
-//             if (error){
-//                 reject(error);
-//                 throw error;
-//             }  
-//              console.log(mdLinkExtractor(file));
-//              resolve(file);
-//            });
-//            console.log('Este es el contenido del archivo')
-//     })
-// }
-// readNewFile(userPath).then (()=>{
-//     console.log('si se está leyendo la función')
-// });
+const readNewFile = (userPath) => {
+    return new Promise ((resolve, reject) => {
+        fs.readFile(userPath, 'UTF-8', (error, file) => {
+            if (error){
+                reject(error);
+                throw error;
+            }  
+            //  console.log(mdLinkExtractor(file));
+
+            const { links } = mdLinkExtractor(file);
+
+        //     links.forEach(link =>
+        //         linkCheck(link, function (err, result){
+        //             if (err) {
+        //                 console.error(err);
+        //                 return;
+        //             }
+        //             console.log(JSON.stringify(result,null,4));
+        //         })
+        //    );
+        //    resolve(file);
+          
+        });
+        console.log('Este es el contenido del archivo')
+})
+}
+
+readNewFile(userPath).then (()=>{
+    console.log('si se está leyendo la función')
+});
