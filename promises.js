@@ -1,7 +1,9 @@
-const { resolve } = require('path');
+const { resolve, extname } = require('path');
 const path = require('path');
 const fs = require('fs');
 const { Console } = require('console');
+const mdLinkExtractor = require('markdown-link-extractor');
+
 
 const userPath = process.argv[2];
 
@@ -15,5 +17,28 @@ const pathValidation = (route) => {
         return userPath;
     }
 }
-pathValidation(userPath);
+const identifyFile = (userPath) => {
+if (path.extname(pathValidation(userPath))==='.md'){
+    console.log('Es un archivo .md')
+}else {
+    console.log('no se encontró archivo .md');
+}
+}
+identifyFile(userPath);
 
+// const readNewFile = (userPath) => {
+//     return new Promise ((resolve, reject) => {
+//         fs.readFile(userPath, 'UTF-8', (error, file) => {
+//             if (error){
+//                 reject(error);
+//                 throw error;
+//             }  
+//              console.log(mdLinkExtractor(file));
+//              resolve(file);
+//            });
+//            console.log('Este es el contenido del archivo')
+//     })
+// }
+// readNewFile(userPath).then (()=>{
+//     console.log('si se está leyendo la función')
+// });
