@@ -11,7 +11,6 @@ const userPath = process.argv[2];
 const pathValidation = (route) => {
     const newRoute = path.resolve(route).normalize();
     if(!path.isAbsolute(userPath)){
-        console.log('la ruta se ha transformado', newRoute);
         return newRoute;
     } else {
         console.log('la ruta es absoluta', userPath)
@@ -34,9 +33,6 @@ const readNewFile = (userPath) => {
                 reject(error);
                 throw error;
             }  
-            //  console.log(mdLinkExtractor(file));
-
-            const { links } = mdLinkExtractor(file);
 
         //     links.forEach(link =>
         //         linkCheck(link, function (err, result){
@@ -47,13 +43,21 @@ const readNewFile = (userPath) => {
         //             console.log(JSON.stringify(result,null,4));
         //         })
         //    );
-        //    resolve(file);
+           resolve(file);
           
         });
-        console.log('Este es el contenido del archivo')
 })
 }
 
-readNewFile(userPath).then (()=>{
-    console.log('si se está leyendo la función')
+readNewFile(userPath).then ((file)=>{
+    const { links } = mdLinkExtractor(file,extended = true);
+    const basicInfoLink = {};
+  
+    links.forEach((link) => {
+
+        basicInfoLink.href = link.href;
+        basicInfoLink.text = link.text;
+        basicInfoLink.file = pathValidation(userPath);
+        console.log(basicInfoLink.file, basicInfoLink.href, basicInfoLink.text);
+    })
 });
