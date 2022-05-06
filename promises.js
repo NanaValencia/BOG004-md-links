@@ -66,11 +66,73 @@ resolve ({
    });
  });
 };
+let statsReturn = {};
+const linkStats = (arrayObject) => {
+    const total = arrayObject.length;
+    const sizeLinks = arrayObject.map((e) => e.href);
+    const uniqueLinks = new Set(sizeLinks);
+    const unique = [...uniqueLinks].length;
+    statsReturn.total = total;
+    statsReturn.unique = unique;
+    return statsReturn;
+} 
 
-const validate = process.argv[3];
-const isValidate = validate === '--validate' ? true : false;
-console.log(validate);
-console.log(isValidate);
+// const optionsView = {};
+let validate = '';
+let stats = '';
+const thirdPosition = () => {
+    if(process.argv[3] === '--validate') {
+        validate = true;   
+    } else if (process.argv[3] === '--stats') {
+        stats = true;
+    }
+    console.log(validate, 'SOY VALIDATE')
+    console.log(stats, 'SOY STATS')
+}
+
+const validateAndStats = () => {
+    if (process.argv[4] === '--stats') {
+        stats = true;
+    } 
+    console.log(linkStats([
+        {
+          file: './test.md',
+          href: 'https://es.wikipedia.org/wiki/Markdown',
+          statusCode: 200,
+          status: 'Ok',
+          text: 'Markdown'
+        },
+        {
+          file: './test.md',
+          href: 'https://nodejs.org/',
+          statusCode: 200,
+          status: 'Ok',
+          text: 'Node.js'
+        },
+        {
+          file: './test.md',
+          href: 'https://user-image.githubusercontent.com/110297/42118443-b7a5f1f0-7bc8-11e8-96ad-9cc5593715a6.jpg',
+          statusCode: 500,
+          status: 'Fail',
+          text: 'md-links'
+        },
+        {
+          file: './test.md',
+          href: 'https://developers.google.com/v8/',
+          statusCode: 200,
+          status: 'Ok',
+          text: 'motor de JavaScript V8 de Chrome'
+        }
+      ]
+      ), 'soy info basica')
+} 
+validateAndStats()
+
+// console.log(validate, isValidate);
+
+// const stats = process.argv[4];
+// const isStats = stats === '--stats' ? true : false;
+// console.log(stats, isStats);
 
 const mdLinks = (path, options) => {
     return new Promise((resolve, reject) => {
@@ -96,9 +158,12 @@ const mdLinks = (path, options) => {
         return basicInfoLinks;
          })
     .then((res) => {
-        if(options.validate !== true){
+        if((validate !== true) && (stats !== true)){
             resolve (res);
-        }else {
+        }else if (stats === true) {
+            resolve (linkStats(res))
+        }
+        else {
             resolve(Promise.all(res.map((e) => validateState(e))))
         }  
     })
@@ -108,7 +173,7 @@ const mdLinks = (path, options) => {
     });
 }
 
-mdLinks(userPath, {validate: isValidate})
+mdLinks(userPath, thirdPosition())
 .then((res) => {
     console.log(res, 'Esta es la función validar')
 })
