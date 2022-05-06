@@ -67,6 +67,11 @@ resolve ({
  });
 };
 
+const validate = process.argv[3];
+const isValidate = validate === '--validate' ? true : false;
+console.log(validate);
+console.log(isValidate);
+
 const mdLinks = (path, options) => {
     return new Promise((resolve, reject) => {
         //Ingresa path
@@ -91,7 +96,7 @@ const mdLinks = (path, options) => {
         return basicInfoLinks;
          })
     .then((res) => {
-        if(!options){
+        if(options.validate !== true){
             resolve (res);
         }else {
             resolve(Promise.all(res.map((e) => validateState(e))))
@@ -103,7 +108,7 @@ const mdLinks = (path, options) => {
     });
 }
 
-mdLinks(userPath)
+mdLinks(userPath, {validate: isValidate})
 .then((res) => {
     console.log(res, 'Esta es la función validar')
 })
