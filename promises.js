@@ -2,7 +2,6 @@ const fs = require('fs');
 const { resolve } = require('path');
 const path = require('path');
 const linkCheck = require('link-check');
-// const file = require('link-check/lib/proto/file');
 const markdownLinkExtractor = require('markdown-link-extractor');
 
 //Esta constante guarda la ruta que se ingresa en consola
@@ -12,7 +11,7 @@ const userPath = process.argv[2];
 const pathValidation = (route) => {
     const absoluteRoute = path.resolve(route).normalize();
     if(!path.isAbsolute(userPath)){
-        console.log('La ruta debe ser transformada como absoluta', absoluteRoute);
+        // console.log('La ruta debe ser transformada como absoluta', absoluteRoute);
         return absoluteRoute;
     } else {
         console.log('La ruta ahora es absoluta', userPath)
@@ -22,8 +21,8 @@ const pathValidation = (route) => {
 
 //Identifica si el archivo es .md
 const identifyFile = (userPath) => {
-    const mdFile = path.extname(pathValidation(userPath)) === '.md';
-    return mdFile;
+    const ismdFile = path.extname(pathValidation(userPath)) === '.md';
+    return ismdFile;
 };
 
 //Función para leer el archivo
@@ -31,7 +30,6 @@ const readNewFile = (userPath) => {
     return new Promise ((resolve, reject) => {
         fs.readFile(userPath, 'UTF-8', (error, file) => {
             if (error) {
-                reject('soy un error de leer')
                 throw error;    
             }
             if (!identifyFile(userPath)) {
@@ -43,6 +41,7 @@ const readNewFile = (userPath) => {
     });
 };
 
+//Función para crear el objeto con los datos y cambiar alive a ok y dead a fail
 const validateState = (objectArray) => {
     return new Promise ((resolve, reject) => {
         const objectLink = objectArray.href;
@@ -57,10 +56,17 @@ if (result.status === 'alive') {
 } else {
     statusResponse = 'fail';
 }
-resolve ({file: objectArray.file, href: objectArray.href, statusCode: result.statusCode, status: statusResponse, text: objectArray.text});
-        })
-    })
-}
+resolve ({
+    file: objectArray.file, 
+    href: objectArray.href,
+    statusCode: result.statusCode, 
+    status: statusResponse, 
+    text: objectArray.text
+     });   
+   });
+ });
+};
+
 const mdLinks = (path, options) => {
     return new Promise((resolve, reject) => {
         //Ingresa path
@@ -71,7 +77,7 @@ const mdLinks = (path, options) => {
         //Función que lee el archivo y crea el objeto
         const basicInfoLinks = [];
         readNewFile(absoluteRoute)
-        .then((file) =>{
+        .then((file) => {
             //Se crea una constante para usar la libreria markdownLinkExtractor, para extraer los links
             const { links } = markdownLinkExtractor(file,(extended = true));
             const arrayLinks = links.map((link) => {
@@ -82,14 +88,11 @@ const mdLinks = (path, options) => {
             basicInfoLinks.push(linksObject);
             return linksObject;
         });
-        // resolve(basicInfoLinks)
         return basicInfoLinks;
          })
     .then((res) => {
-        if(options === ''){
-            res.map((e) => {
-                resolve(`${e.file} ${e.href} ${e.text}`)
-            })
+        if(!options){
+            resolve (res);
         }else {
             resolve(Promise.all(res.map((e) => validateState(e))))
         }  
