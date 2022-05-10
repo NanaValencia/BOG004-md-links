@@ -14,7 +14,6 @@ const pathValidation = (route) => {
         // console.log('La ruta debe ser transformada como absoluta', absoluteRoute);
         return absoluteRoute;
     } else {
-        console.log('La ruta ahora es absoluta', userPath)
         return userPath;
     }
 };
@@ -41,20 +40,21 @@ const readNewFile = (userPath) => {
     });
 };
 
-//Función para crear el objeto con los datos y cambiar alive a ok y dead a fail
-const validateState = (objectArray) => {
+//Función para crear el objeto con los datos href, text, file, status y statuscode. Además cambia alive a ok y dead a fail
+const validateLink = (objectArray) => {
     return new Promise ((resolve, reject) => {
         const objectLink = objectArray.href;
         linkCheck(objectLink, (error, result) => {
 if (error) {
     console.log(error, 'SOY ERROR');
+    reject('No fue posible realizar la petición a:' + link);
     return;
 }
 let statusResponse = '';
 if (result.status === 'alive') {
     statusResponse = 'ok';
 } else {
-    statusResponse = 'fail';
+    statusResponse = 'Fail';
 }
 resolve ({
     file: objectArray.file, 
@@ -66,18 +66,23 @@ resolve ({
    });
  });
 };
-let statsReturn = {};
+
+//Función que crea la respuesta para --stats con total y unique
 const linkStats = (arrayObject) => {
     const total = arrayObject.length;
     const sizeLinks = arrayObject.map((e) => e.href);
     const uniqueLinks = new Set(sizeLinks);
     const unique = [...uniqueLinks].length;
-    statsReturn.total = total;
-    statsReturn.unique = unique;
-    return statsReturn;
+    return {total, unique};
 } 
 
-// const optionsView = {};
+const validateAndStats = (arrayObject, totalUnique) => {
+    let broken = arrayObject.filter ((e) => e.status === 'Fail').length;
+    //Desestructura el objeto totalUnique para crear uno nuevo que incluya broken 
+    return {...totalUnique, broken:broken};
+}
+
+//Asigna las posiciones 3 para --validate y 4 para --validate and --stats
 let validate = '';
 let stats = '';
 const thirdPosition = () => {
@@ -85,54 +90,12 @@ const thirdPosition = () => {
         validate = true;   
     } else if (process.argv[3] === '--stats') {
         stats = true;
+    } if (process.argv[4] === '--stats') {
+        stats = true;
     }
-    console.log(validate, 'SOY VALIDATE')
-    console.log(stats, 'SOY STATS')
+    
 }
 
-const validateAndStats = () => {
-    if (process.argv[4] === '--stats') {
-        stats = true;
-    } 
-    console.log(linkStats([
-        {
-          file: './test.md',
-          href: 'https://es.wikipedia.org/wiki/Markdown',
-          statusCode: 200,
-          status: 'Ok',
-          text: 'Markdown'
-        },
-        {
-          file: './test.md',
-          href: 'https://nodejs.org/',
-          statusCode: 200,
-          status: 'Ok',
-          text: 'Node.js'
-        },
-        {
-          file: './test.md',
-          href: 'https://user-image.githubusercontent.com/110297/42118443-b7a5f1f0-7bc8-11e8-96ad-9cc5593715a6.jpg',
-          statusCode: 500,
-          status: 'Fail',
-          text: 'md-links'
-        },
-        {
-          file: './test.md',
-          href: 'https://developers.google.com/v8/',
-          statusCode: 200,
-          status: 'Ok',
-          text: 'motor de JavaScript V8 de Chrome'
-        }
-      ]
-      ), 'soy info basica')
-} 
-validateAndStats()
-
-// console.log(validate, isValidate);
-
-// const stats = process.argv[4];
-// const isStats = stats === '--stats' ? true : false;
-// console.log(stats, isStats);
 
 const mdLinks = (path, options) => {
     return new Promise((resolve, reject) => {
@@ -159,24 +122,41 @@ const mdLinks = (path, options) => {
          })
     .then((res) => {
         if((validate !== true) && (stats !== true)){
-            resolve (res);
-        }else if (stats === true) {
-            resolve (linkStats(res))
+            return (res);
+        }else if ((validate === true) && (stats === true))  {
+            return(Promise.all(res.map((e) => validateLink(e))));
         }
-        else {
-            resolve(Promise.all(res.map((e) => validateState(e))))
+        else if (stats === true) {
+            return(linkStats(res));
         }  
+        else {
+            return(Promise.all(res.map((e) => validateLink(e))));
+        }
     })
-    .catch((error) => {console.log(error);
-        reject('Hubo un problema con la ejecución')
-      });
+    .then((res) => {
+        if((validate !== true) && (stats !== true)) {
+            resolve(res.map((e) => `${e.file} ${e.href} ${e.test}\n`).join(''));  
+        } else if ((validate === true) && (stats === true)) {
+            resolve (validateAndStats(res,linkStats(res)));
+        } else if (stats === true) {
+            resolve(`Total: ${res.total}\nUnique: ${res.unique}`);
+        } else {
+            resolve(res.map((e) => `${e.file} ${e.href} ${e.statusCode} ${e.status} ${e.text}\n`).join(''));
+        }
+    })
+    .catch ((error) => {
+        console.log(error);
+        reject('hubo un problema con la ejecución');
     });
-}
+    //Función que valida el estado de los links
+    //Función de estadísticas
+});
+};
 
 mdLinks(userPath, thirdPosition())
 .then((res) => {
-    console.log(res, 'Esta es la función validar')
+    console.log(res, 'Se ha resuelto la promesa')
 })
 .catch ((err) => {
-    console.log(err, 'cayó en error')
+    console.log(err, 'Cayó en error')
 });
