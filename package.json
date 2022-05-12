@@ -8,5 +8,24 @@
     "link-check": "^5.1.0",
     "markdown-link-extractor": "^2.0.1",
     "node-fetch": "^3.2.4"
-  }
+  },
+  "description": "Libreria para leer archivos .md, que identifica links rotos, especifica estadisticas y valída información general",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NanaValencia/BOG004-md-links.git"
+  },
+  "author": "Johana Valencia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NanaValencia/BOG004-md-links/issues"
+  },
+  "homepage": "https://github.com/NanaValencia/BOG004-md-links#readme"
 }
