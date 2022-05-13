@@ -27,14 +27,14 @@ El ejecutable de nuestra aplicación debe poder ejecutarse de la siguiente maner
 node.js <path-to-file> [no options/options]
 
 Por ejemplo:
-![No options](C:\Users\ASUS\Desktop\LABORATORIA\BOG004-md-links\img\noOptions.png)
+![No options](C:\Users\ASUS\Desktop\LABORATORIA\BOG004-md-links\img\noOption.jpg)
 
 El comportamiento por defecto, analizar el archivo Markdown e imprimir los links que vaya encontrando, junto con la ruta del archivo donde aparece y el texto que hay dentro del link.
 
 *Options*
 **--validate**
 Si pasamos la opción --validate, el módulo hace una petición HTTP para averiguar si el link funciona o no. Si el link resulta en una redirección a una URL que responde ok, entonces consideraremos el link como ok.
-![validate](C:\Users\ASUS\Desktop\LABORATORIA\BOG004-md-links\img\validate.png)
+![validate](C:\Users\ASUS\Desktop\LABORATORIA\BOG004-md-links\img\validate.jpg)
 
 Vemos que el output en este caso incluye la palabra ok o fail después de la URL, así como el status de la respuesta recibida a la petición HTTP a dicha URL.
 

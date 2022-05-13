@@ -137,7 +137,7 @@ const mdLinks = (path, options) => {
     //Función de estadísticas
 });
 };
-module.exports = mdLinks;
+module.exports = { mdLinks, pathValidation, readNewFile, validateLink }
 
 // mdLinks(userPath, thirdPosition())
 // .then((res) => {
