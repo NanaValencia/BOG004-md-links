@@ -3,8 +3,11 @@ const {pathValidation} = require('../index.js')
 const {identifyFile} = require('../index.js')
 const {validateLink} = require('../index.js')
 const linkCheck = require('link-check')
+const { mdLinks } = require('../index.js')
+const markdownLinkExtractor = require('markdown-link-extractor')
 
 jest.mock('link-check');
+// jest.mock('markdown-link-extractor');
 
 describe('pathValidation', () => {
   it('debería retornar una ruta absoluta', () =>{
@@ -51,3 +54,51 @@ describe('prueba para validar el estado de los links', () => {
     await expect(validateLink(objectTest)).resolves.toEqual(objectResolve)})
 })
 });
+
+describe('mdLinks', () => {
+  it('mdLinks sin validate', () => {
+    let resultExpect = './testFileTwo.md https://es.wikipedia.org/wiki/Markdown Markdown\n' 
+    let path = './testFileTwo.md';
+    return mdLinks(path, {validate:false})
+    .then(respuesta => {
+      expect(respuesta).toBe(resultExpect)
+    })
+    .catch((err) => console.log(err, 'mensaje de error'));
+  })
+})
+
+describe('mdLinks', () => {
+  it('mdLinks con validate', () => {
+    let resultExpect = './testFileTwo.md https://es.wikipedia.org/wiki/Markdown 200 ok Markdown\n' 
+    let path = './testFileTwo.md';
+    return mdLinks(path, {validate:true})
+    .then(respuesta => {
+      expect(respuesta).toBe(resultExpect)
+    })
+    .catch((err) => console.log(err, 'mensaje de error'));
+  })
+})
+
+describe('mdLinks', () => {
+  it('mdLinks con stats', () => {
+    let resultExpect = 'Total: 1\nUnique: 1' 
+    let path = './testFileTwo.md';
+    return mdLinks(path, {stats:true})
+    .then(respuesta => {
+      expect(respuesta).toBe(resultExpect)
+    })
+    .catch((err) => console.log(err, 'mensaje de error'));
+  })
+})
+
+describe('mdLinks', () => {
+  it('mdLinks con validate y stats', () => {
+    let resultExpect = { total: 1, unique: 1, broken: 0 }
+    let path = './testFileTwo.md';
+    return mdLinks(path, {validate:true, stats: true})
+    .then(respuesta => {
+      expect(respuesta).toBe(resultExpect)
+    })
+    .catch((err) => console.log(err, 'mensaje de error'));
+  })
+})
