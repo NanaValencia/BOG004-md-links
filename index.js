@@ -46,7 +46,6 @@ const validateLink = (objectArray) => {
         const objectLink = objectArray.href;
         linkCheck(objectLink, (error, result) => {
 if (error) {
-    console.log(error, 'SOY ERROR');
     reject('No fue posible realizar la petición a:' + link);
     return;
 }
@@ -82,7 +81,7 @@ const validateAndStats = (arrayObject, totalUnique) => {
     return {...totalUnique, broken:broken};
 }
 
-const mdLinks = (path, options) => {
+const mdLinks = (userPath, options) => {
     return new Promise((resolve, reject) => {
         //Ingresa path
         //Función para convertir la ruta en absoluta
@@ -120,7 +119,7 @@ const mdLinks = (path, options) => {
     })
     .then((res) => {
         if((options.validate !== true) && (options.stats !== true)) {
-            resolve(res.map((e) => `${e.file} ${e.href} ${e.test}\n`).join(''));  
+            resolve(res.map((e) => `${e.file} ${e.href} ${e.text}\n`).join(''));  
         } else if ((options.validate === true) && (options.stats === true)) {
             resolve (validateAndStats(res,linkStats(res)));
         } else if (options.stats === true) {
@@ -137,7 +136,7 @@ const mdLinks = (path, options) => {
     //Función de estadísticas
 });
 };
-module.exports = { mdLinks, pathValidation, readNewFile, validateLink }
+module.exports = { mdLinks, pathValidation, readNewFile, validateLink}
 
 // mdLinks(userPath, thirdPosition())
 // .then((res) => {
