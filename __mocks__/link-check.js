@@ -1,3 +1,6 @@
+/* eslint-disable quotes */
+/* eslint-disable indent */
+/* eslint-disable no-undef */
 const linkCheck = jest.fn((link, cb) => {
     const result = {
         statusCode:200,

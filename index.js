@@ -1,3 +1,7 @@
+/* eslint-disable indent */
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
+/* eslint-disable quotes */
 const fs = require('fs');
 const { resolve } = require('path');
 const path = require('path');
@@ -73,13 +77,13 @@ const linkStats = (arrayObject) => {
     const uniqueLinks = new Set(sizeLinks);
     const unique = [...uniqueLinks].length;
     return {total, unique};
-} 
+}; 
 
 const validateAndStats = (arrayObject, totalUnique) => {
     let broken = arrayObject.filter ((e) => e.status === 'Fail').length;
     //Desestructura el objeto totalUnique para crear uno nuevo que incluya broken 
     return {...totalUnique, broken:broken};
-}
+};
 
 const mdLinks = (userPath, options) => {
     return new Promise((resolve, reject) => {
@@ -136,13 +140,4 @@ const mdLinks = (userPath, options) => {
     //Función de estadísticas
 });
 };
-module.exports = { mdLinks, pathValidation, readNewFile, validateLink}
-
-// mdLinks(userPath, thirdPosition())
-// .then((res) => {
-//     console.log(res, 'Se ha resuelto la promesa')
-// })
-// .catch ((err) => {
-//     console.log(err, 'Cayó en error')
-// });
-
+module.exports = { mdLinks, pathValidation, readNewFile, validateLink};
